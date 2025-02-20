@@ -7,7 +7,6 @@ import {
 } from "../build-prompts";
 import OpenAI from "openai";
 import { logger } from "../../../lib/logger";
-const openai = new OpenAI();
 
 export async function analyzeSchemaAndPrompt(
   urls: string[],
@@ -38,10 +37,11 @@ export async function analyzeSchemaAndPrompt(
       "isMultiEntity was true, but no multiEntityKeys",
     );
 
-  const model = "gpt-4o";
+  const model = process.env.MODEL_NAME || "gpt-4o";
 
+  const openai = new OpenAI();
   const result = await openai.beta.chat.completions.parse({
-    model: model,
+    model,
     messages: [
       {
         role: "system",
