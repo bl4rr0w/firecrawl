@@ -384,8 +384,8 @@ export function crawlToCrawler(
     jobId: id,
     initialUrl: sc.originUrl!,
     baseUrl: newBase ? new URL(newBase).origin : undefined,
-    includes: sc.crawlerOptions?.includes ?? [],
-    excludes: sc.crawlerOptions?.excludes ?? [],
+    includes: (sc.crawlerOptions?.includes ?? []).filter(x => x.trim().length > 0),
+    excludes: (sc.crawlerOptions?.excludes ?? []).filter(x => x.trim().length > 0),
     maxCrawledLinks: sc.crawlerOptions?.maxCrawledLinks ?? 1000,
     maxCrawledDepth: getAdjustedMaxDepth(
       sc.originUrl!,
@@ -398,6 +398,7 @@ export function crawlToCrawler(
       sc.crawlerOptions?.allowExternalContentLinks ?? false,
     allowSubdomains: sc.crawlerOptions?.allowSubdomains ?? false,
     ignoreRobotsTxt: sc.crawlerOptions?.ignoreRobotsTxt ?? false,
+    regexOnFullURL: sc.crawlerOptions?.regexOnFullURL ?? false,
   });
 
   if (sc.robots !== undefined) {

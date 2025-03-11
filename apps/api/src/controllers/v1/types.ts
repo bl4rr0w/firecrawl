@@ -65,6 +65,7 @@ export const extractOptions = z
         "Based on the information on the page, extract all the information from the schema in JSON format. Try to extract all the fields even those that might not be marked as required.",
       ),
     prompt: z.string().max(10000).optional(),
+    temperature: z.number().optional(),
   })
   .strict(strictMessage);
 
@@ -244,10 +245,11 @@ const extractRefine = (obj) => {
   const hasJsonFormat = obj.formats?.includes("json");
   const hasJsonOptions = obj.jsonOptions !== undefined;
   return (
-    (hasExtractFormat && hasExtractOptions) ||
-    (!hasExtractFormat && !hasExtractOptions) ||
-    (hasJsonFormat && hasJsonOptions) ||
-    (!hasJsonFormat && !hasJsonOptions)
+    (hasExtractFormat && hasExtractOptions)
+    || (!hasExtractFormat && !hasExtractOptions)
+  ) && (
+    (hasJsonFormat && hasJsonOptions)
+    || (!hasJsonFormat && !hasJsonOptions)
   );
 };
 const extractRefineOpts = {
@@ -261,7 +263,7 @@ const extractTransform = (obj) => {
       obj.extract ||
       obj.formats?.includes("json") ||
       obj.jsonOptions) &&
-    !obj.timeout
+    (obj.timeout === 30000)
   ) {
     obj = { ...obj, timeout: 60000 };
   }
@@ -446,6 +448,7 @@ const crawlerOptions = z
     ignoreSitemap: z.boolean().default(false),
     deduplicateSimilarURLs: z.boolean().default(true),
     ignoreQueryParameters: z.boolean().default(false),
+    regexOnFullURL: z.boolean().default(false),
   })
   .strict(strictMessage);
 
@@ -499,7 +502,7 @@ export const mapRequestSchema = crawlerOptions
     search: z.string().optional(),
     ignoreSitemap: z.boolean().default(false),
     sitemapOnly: z.boolean().default(false),
-    limit: z.number().min(1).max(5000).default(5000),
+    limit: z.number().min(1).max(30000).default(5000),
     timeout: z.number().positive().finite().optional(),
     useMock: z.string().optional(),
   })
@@ -789,6 +792,7 @@ export function toLegacyCrawlerOptions(x: CrawlerOptions) {
     ignoreSitemap: x.ignoreSitemap,
     deduplicateSimilarURLs: x.deduplicateSimilarURLs,
     ignoreQueryParameters: x.ignoreQueryParameters,
+    regexOnFullURL: x.regexOnFullURL,
   };
 }
 
@@ -809,6 +813,7 @@ export function fromLegacyCrawlerOptions(x: any): {
       ignoreSitemap: x.ignoreSitemap,
       deduplicateSimilarURLs: x.deduplicateSimilarURLs,
       ignoreQueryParameters: x.ignoreQueryParameters,
+      regexOnFullURL: x.regexOnFullURL,
     }),
     internalOptions: {
       v0CrawlOnlyUrls: x.returnOnlyUrls,

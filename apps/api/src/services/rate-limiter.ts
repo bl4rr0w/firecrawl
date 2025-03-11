@@ -232,10 +232,12 @@ const testSuiteTokens = [
   "6c46abb",
   "cb0ff78",
   "fd769b2",
-  "4c2638d",
+  // "4c2638d",
   "cbb3462", // don't remove (s-ai)
   "824abcd", // don't remove (s-ai)
   "0966288",
+  "226556f",
+  "0a18c9e", // gh
 ];
 
 const manual = ["69be9e74-7624-4990-b20d-08e0acc70cf6"];
@@ -274,7 +276,7 @@ export function getRateLimiter(
     return devBRateLimiter;
   }
 
-  if (teamId && teamId === process.env.ETIER1A_TEAM_ID) {
+  if (teamId && (teamId === process.env.ETIER1A_TEAM_ID || teamId === process.env.ETIER1A_TEAM_ID_O)) {
     return etier1aRateLimiter;
   }
 
@@ -308,7 +310,7 @@ export function getConcurrencyLimitMax(
     return CONCURRENCY_LIMIT.devB;
   }
 
-  if (teamId && teamId === process.env.ETIER1A_TEAM_ID) {
+  if (teamId && (teamId === process.env.ETIER1A_TEAM_ID || teamId === process.env.ETIER1A_TEAM_ID_O)) {
     return CONCURRENCY_LIMIT.etier1a;
   }
 
