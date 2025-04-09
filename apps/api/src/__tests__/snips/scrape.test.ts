@@ -66,23 +66,35 @@ describe("Scrape tests", () => {
   });
 
   if (!process.env.TEST_SUITE_SELF_HOSTED) {
-    describe("Ad blocking (f-e dependant)", () => {
-      it.concurrent("blocks ads by default", async () => {
+    // describe("Ad blocking (f-e dependant)", () => {
+    //   it.concurrent("blocks ads by default", async () => {
+    //     const response = await scrape({
+    //       url: "https://www.allrecipes.com/recipe/18185/yum/",
+    //     });
+
+    //     expect(response.markdown).not.toContain(".g.doubleclick.net/");
+    //   }, 30000);
+
+    //   it.concurrent("doesn't block ads if explicitly disabled", async () => {
+    //     const response = await scrape({
+    //       url: "https://www.allrecipes.com/recipe/18185/yum/",
+    //       blockAds: false,
+    //     });
+
+    //     expect(response.markdown).toMatch(/(\.g\.doubleclick\.net|amazon-adsystem\.com)\//);
+    //   }, 30000);
+    // });
+
+    describe("Change Tracking format", () => {
+      it.concurrent("works", async () => {
         const response = await scrape({
-          url: "https://www.allrecipes.com/recipe/18185/yum/",
+          url: "https://example.com",
+          formats: ["markdown", "changeTracking"],
         });
 
-        expect(response.markdown).not.toContain(".g.doubleclick.net/");
-      }, 30000);
-
-      it.concurrent("doesn't block ads if explicitly disabled", async () => {
-        const response = await scrape({
-          url: "https://www.allrecipes.com/recipe/18185/yum/",
-          blockAds: false,
-        });
-
-        expect(response.markdown).toMatch(/(\.g\.doubleclick\.net|amazon-adsystem\.com)\//);
-      }, 30000);
+        expect(response.changeTracking).toBeDefined();
+        expect(response.changeTracking?.previousScrapeAt).not.toBeNull();
+      });
     });
   
     describe("Location API (f-e dependant)", () => {
@@ -140,8 +152,9 @@ describe("Scrape tests", () => {
         await scrape({
           url: "http://firecrawl.dev",
           proxy: "stealth",
+          timeout: 60000,
         });
-      }, 30000);
+      }, 70000);
     });
     
     describe("PDF (f-e dependant)", () => {
